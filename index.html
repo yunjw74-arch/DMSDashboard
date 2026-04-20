@@ -46,7 +46,6 @@
                 </form>
 
                 <form action="https://www.compuzone.co.kr/search/search.htm" method="get" target="_blank" class="flex items-center relative w-[130px] md:w-[165px]" onsubmit="setTimeout(() => this.reset(), 100)">
-                    <!-- name 속성을 SearchProductKey 로 복구하여 검색 기능 정상화 -->
                     <input type="text" name="SearchProductKey" placeholder="컴퓨존 검색" class="pl-8 pr-3 py-1.5 border border-[#0a53a8] rounded-full text-[13px] text-[#0a53a8] placeholder-[#0a53a8]/70 focus:outline-none focus:ring-2 focus:ring-[#0a53a8]/30 w-full bg-gray-50 transition-colors" autocomplete="off">
                     <i class="fas fa-desktop absolute left-3 text-[#0a53a8] text-xs"></i>
                 </form>
@@ -58,7 +57,6 @@
                         <svg class="w-4 h-4 text-[#8b5cf6]" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C12 6.627 17.373 12 24 12C17.373 12 12 17.373 12 24C12 17.373 6.627 12 0 12C6.627 12 12 6.627 12 0Z" /></svg>
                     </a>
                     <a href="https://notebooklm.google.com/" target="_blank" title="노트북LM" class="bg-white hover:bg-gray-50 transition w-8 h-8 rounded-full border border-gray-200 shadow-sm flex items-center justify-center group overflow-hidden">
-                        <!-- 직접 그린 노트북LM SVG 로고 적용 -->
                         <div class="w-5 h-5 bg-[#1e293b] rounded-full flex items-center justify-center group-hover:scale-105 transition-transform">
                             <svg class="w-3.5 h-3.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M4 22v-6a8 8 0 0 1 16 0v6" />
@@ -296,7 +294,6 @@
         window.updateCalendarIframe = () => {
             const iframe = document.getElementById('calendar-iframe-month');
             if (iframe) {
-                // wkst=1: 일요일 시작, wkst=2: 월요일 시작 / mode=MONTH: 월간 보기 기본
                 const baseSrc = `src=${encodeURIComponent(calendarId)}&ctz=Asia%2FSeoul&bgcolor=%23ffffff`;
                 iframe.src = `https://calendar.google.com/calendar/embed?${baseSrc}&showTitle=0&showNav=1&showPrint=0&showTabs=1&showCalendars=0&showTz=0&mode=MONTH&wkst=1`;
             }
@@ -329,14 +326,11 @@
         // --- Auth Actions ---
         window.loginWithGoogle = async () => {
             try {
-                // 구글 로그인 시도 (신규 회원은 자동 회원가입 처리됨)
                 await signInWithPopup(auth, provider);
             } catch (error) {
                 console.error("Login Error:", error);
                 
-                // 미리보기(iframe/Canvas) 환경에서 발생하는 도메인 권한 에러 처리
                 if (error.code === 'auth/unauthorized-domain' || error.message.includes('unauthorized-domain')) {
-                    // 현재 도메인 주소를 모달에 표시하고 에러 모달 띄우기
                     document.getElementById('current-domain').innerText = window.location.hostname;
                     document.getElementById('domainErrorModal').classList.remove('hidden');
                 } else if (error.code === 'auth/popup-closed-by-user') {
@@ -366,7 +360,6 @@
             const avatarFallback = document.getElementById('user-avatar-fallback');
 
             if (user && !user.isAnonymous) {
-                // 정상 로그인 상태 UI 업데이트
                 loginBtn.classList.add('hidden');
                 profileArea.classList.remove('hidden');
                 
@@ -380,15 +373,12 @@
                     avatarFallback.style.display = 'inline-block';
                 }
 
-                // 개인 데이터 불러오기 시작
                 startListeners(user.uid);
                 showToast(`환영합니다, ${displayNameElem.innerText}님!`);
             } else {
-                // 로그아웃 상태 UI 업데이트 (익명 로그인 포함 접근 거부)
                 loginBtn.classList.remove('hidden');
                 profileArea.classList.add('hidden');
                 
-                // 기존 리스너 해제 및 데모 데이터 로드
                 unsubs.forEach(u => u());
                 unsubs = [];
                 loadDemoData();
@@ -400,7 +390,6 @@
             unsubs.forEach(u => u());
             unsubs = [];
 
-            // 1. Config
             unsubs.push(onSnapshot(getConfigDoc(uid), (snap) => {
                 if (snap.exists()) {
                     const data = snap.data();
@@ -411,7 +400,6 @@
                     }
                     render();
                 } else {
-                    // 최초 사용자 기본 카테고리 생성
                     setDoc(getConfigDoc(uid), { 
                         categories: ['기본 그룹', '업무용'], 
                         calendarId: "ko.south_korea#holiday@group.v.calendar.google.com" 
@@ -419,13 +407,11 @@
                 }
             }, (err) => console.error("Config error:", err)));
 
-            // 2. Sites
             unsubs.push(onSnapshot(getSitesCol(uid), (snap) => {
                 sites = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 render();
             }, (err) => console.error("Sites error:", err)));
 
-            // 3. Todos
             unsubs.push(onSnapshot(getTodosCol(uid), (snap) => {
                 todos = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 todos.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
@@ -484,7 +470,6 @@
             if (!name || !url) return showToast('이름과 URL을 입력해주세요.');
             if (!url.startsWith('http')) url = 'https://' + url;
             
-            // 새 사이트 추가 시 맨 마지막 순서로 배정 (order 0 버그 방지)
             const currentCatSites = sites.filter(s => s.category === cat);
             const maxOrder = currentCatSites.length > 0 ? Math.max(...currentCatSites.map(s => s.order !== undefined ? s.order : 0)) : 0;
             
@@ -581,7 +566,7 @@
         window.handleDragEnd = (e) => { e.target.classList.remove('opacity-40'); };
         window.handleDrop = async (e, dropIdx) => {
             e.preventDefault();
-            if (!e.dataTransfer.types.includes('application/category')) return; // 사이트 드롭은 무시
+            if (!e.dataTransfer.types.includes('application/category')) return;
 
             if(dragIdx !== dropIdx && dragIdx !== -1 && currentUser) {
                 const moved = categories.splice(dragIdx, 1)[0];
@@ -595,7 +580,7 @@
 
         window.handleSiteDragStart = (e, siteId) => {
             if (!requireAuth()) { e.preventDefault(); return; }
-            e.stopPropagation(); // 카테고리 드래그와 겹치지 않게 방지
+            e.stopPropagation();
             draggedSite = sites.find(s => s.id === siteId);
             e.target.classList.add('opacity-40');
             e.dataTransfer.effectAllowed = 'move';
@@ -609,11 +594,10 @@
         };
 
         window.handleSiteDragOver = (e) => {
-            e.preventDefault(); // 드롭 영역 허용
+            e.preventDefault();
             e.stopPropagation();
             e.dataTransfer.dropEffect = 'move';
             
-            // 드롭될 타겟 위치에 시각적 하이라이트 표시
             const card = e.currentTarget;
             if (card && card.classList.contains('site-card')) {
                 card.classList.add('bg-blue-50', 'ring-2', 'ring-blue-400');
@@ -621,7 +605,6 @@
         };
 
         window.handleSiteDragLeave = (e) => {
-            // 마우스가 타겟을 벗어나면 하이라이트 제거
             const card = e.currentTarget;
             if (card && card.classList.contains('site-card')) {
                 card.classList.remove('bg-blue-50', 'ring-2', 'ring-blue-400');
@@ -640,29 +623,24 @@
             if (!requireAuth() || !draggedSite) return;
             if (!e.dataTransfer.types.includes('application/site')) return;
 
-            // order가 0인 경우를 올바르게 처리하도록 정렬 (falsy 버그 해결)
             let targetSites = sites.filter(s => s.category === targetCat).sort((a, b) => {
                 const valA = a.order !== undefined ? a.order : (a.createdAt || 0);
                 const valB = b.order !== undefined ? b.order : (b.createdAt || 0);
                 return valA - valB;
             });
             
-            if (draggedSite.id === targetSiteId) return; // 제자리에 놓은 경우
+            if (draggedSite.id === targetSiteId) return;
 
-            // 원래 목록에서 먼저 드래그된 아이템을 제거
             targetSites = targetSites.filter(s => s.id !== draggedSite.id);
 
-            // 삽입할 인덱스 찾기 (타겟 아이콘 앞으로 지정)
             let insertIndex = targetSites.length;
             if (targetSiteId) {
                 insertIndex = targetSites.findIndex(s => s.id === targetSiteId);
             }
 
-            // 새 위치에 삽입 및 카테고리 변경 적용 (나머지 아이콘은 자연스럽게 뒤로 밀림)
             draggedSite.category = targetCat;
             targetSites.splice(insertIndex, 0, draggedSite);
 
-            // 해당 카테고리 내의 전체 아이콘 순서 재할당 및 DB 업데이트
             const batchPromises = targetSites.map((site, index) => {
                 return updateDoc(doc(getSitesCol(currentUser.uid), site.id), { 
                     category: targetCat, 
@@ -710,7 +688,6 @@
                 section.addEventListener('dragover', (e) => e.preventDefault());
                 section.addEventListener('drop', (e) => handleDrop(e, cIdx));
 
-                // 사이트 목록을 order 값 기준으로 정렬 (0일 때의 논리적 오류 방지)
                 const catSites = sites.filter(s => s.category === cat).sort((a, b) => {
                     const valA = a.order !== undefined ? a.order : (a.createdAt || 0);
                     const valB = b.order !== undefined ? b.order : (b.createdAt || 0);
@@ -751,7 +728,6 @@
                         </div>
                     </div>
                     
-                    <!-- 아이콘들이 표시되는 빈 영역에도 드롭을 허용하여 맨 뒤로 이동하거나 다른 폴더로 옮길 수 있게 함 -->
                     <div class="grid grid-cols-5 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12 gap-1 items-start min-h-[60px]"
                          ondragover="handleSiteDragOver(event)"
                          ondrop="handleSiteDrop(event, '${cat}', null)">
@@ -814,47 +790,109 @@
             const displayElement = document.getElementById('exchange-rate-display');
             const refreshBtn = document.getElementById('rate-refresh-btn');
             
-            // 수동 새로고침(버튼 클릭) 시 회전하는 애니메이션 추가
             if (refreshBtn && isManual) {
                 refreshBtn.querySelector('i').classList.add('fa-spin');
             }
 
+            let sendRate = 0;
+            let baseRate = 0;
+            let updateTime = "";
+            let isSuccess = false;
+
+            // 1. 직접 API 호출 (환경에 따라 CORS 허용될 경우)
             try {
-                // 브라우저 캐시(과거 기록)를 무시하고 항상 최신 데이터를 받아오기 위해 타임스탬프 파라미터 추가
-                const res = await fetch('https://open.er-api.com/v6/latest/USD?_=' + new Date().getTime());
-                const data = await res.json();
-                
-                if (data && data.rates && data.rates.KRW) {
-                    const baseRate = data.rates.KRW;
-                    // 송금 보낼 때 환율 = 매매기준율 + 약 9.8원 (국내 은행 평균 전신환매도율 스프레드)
-                    const sendRate = baseRate + 9.8; 
-                    currentSendRate = sendRate; // 계산기에 사용할 값 저장
-                    
-                    displayElement.innerHTML = `
-                        <div class="flex items-center gap-2 text-[12px] font-bold text-gray-700 bg-green-50 px-3 py-1.5 rounded-lg border border-green-200 shadow-sm cursor-help transition-all hover:bg-green-100" title="매매기준율: ${baseRate.toLocaleString('ko-KR', {maximumFractionDigits: 2})}원 / 최근 업데이트: ${new Date().toLocaleTimeString('ko-KR')}">
-                            <span class="flex items-center justify-center w-5 h-5 bg-white rounded-full text-green-600 shadow-sm"><i class="fas fa-dollar-sign text-[10px]"></i></span>
-                            <span>1 USD = <span class="text-red-500">${sendRate.toLocaleString('ko-KR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span> 원</span>
-                            <span class="text-[10px] text-gray-500 font-normal ml-1 bg-white px-1.5 py-0.5 rounded border border-gray-200">송금 보낼때</span>
-                        </div>
-                        <button id="rate-refresh-btn" onclick="window.fetchExchangeRate(true)" class="w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-full shadow-sm text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors" title="환율 최신화 (새로고침)">
-                            <i class="fas fa-sync-alt text-xs"></i>
-                        </button>
-                    `;
-
-                    // 계산기 환율 칸 업데이트 및 초기 계산
-                    const calcRateDisplay = document.getElementById('calc-rate-display');
-                    if (calcRateDisplay) {
-                        calcRateDisplay.innerText = sendRate.toLocaleString('ko-KR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-                        window.calculateTotal();
-                    }
-
-                    // 수동 새로고침을 했을 경우 알림 표시
-                    if (isManual) {
-                        showToast('환율 정보가 최신으로 갱신되었습니다.');
+                const res = await fetch('https://quotation-api-cdn.dunamu.com/v1/forex/recent?codes=FRX.KRWUSD');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && data[0]) {
+                        baseRate = data[0].basePrice;
+                        sendRate = data[0].ttSellingPrice;
+                        updateTime = data[0].time;
+                        isSuccess = true;
                     }
                 }
             } catch (e) {
-                console.error("환율 정보를 불러오지 못했습니다.", e);
+                console.warn("Direct fetch blocked, trying proxy...", e);
+            }
+
+            // 2. JSON 기반 프록시 우회 (Failed to fetch 완전 방지)
+            if (!isSuccess) {
+                try {
+                    const targetUrl = 'https://quotation-api-cdn.dunamu.com/v1/forex/recent?codes=FRX.KRWUSD&_=' + new Date().getTime();
+                    const proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(targetUrl);
+                    const res = await fetch(proxyUrl);
+                    
+                    if (res.ok) {
+                        const proxyData = await res.json();
+                        const data = JSON.parse(proxyData.contents);
+                        if (data && data[0]) {
+                            baseRate = data[0].basePrice;
+                            sendRate = data[0].ttSellingPrice;
+                            updateTime = data[0].time;
+                            isSuccess = true;
+                        }
+                    }
+                } catch (e) {
+                    console.warn("Proxy fetch failed, trying fallback CDN...", e);
+                }
+            }
+
+            // 3. 가장 안정적인 글로벌 CDN 환율 API 백업
+            if (!isSuccess) {
+                try {
+                    const res = await fetch('https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.json');
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data && data.usd && data.usd.krw) {
+                            baseRate = data.usd.krw;
+                            sendRate = baseRate + 9.8; // 송금 보낼 때 마진 추가
+                            updateTime = new Date().toLocaleTimeString('ko-KR') + " (글로벌 API)";
+                            isSuccess = true;
+                        }
+                    }
+                } catch (e) {
+                    console.error("All fetch methods failed", e);
+                }
+            }
+
+            // 최종 성공/실패 UI 처리
+            if (isSuccess) {
+                currentSendRate = sendRate;
+                
+                displayElement.innerHTML = `
+                    <div class="flex items-center gap-2 text-[12px] font-bold text-gray-700 bg-green-50 px-3 py-1.5 rounded-lg border border-green-200 shadow-sm cursor-help transition-all hover:bg-green-100" title="매매기준율: ${baseRate.toLocaleString('ko-KR', {maximumFractionDigits: 2})}원 / 기준시간: ${updateTime}">
+                        <span class="flex items-center justify-center w-5 h-5 bg-white rounded-full text-green-600 shadow-sm"><i class="fas fa-dollar-sign text-[10px]"></i></span>
+                        <span>1 USD = <span class="text-red-500">${sendRate.toLocaleString('ko-KR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span> 원</span>
+                        <span class="text-[10px] text-gray-500 font-normal ml-1 bg-white px-1.5 py-0.5 rounded border border-gray-200">송금 보낼때</span>
+                    </div>
+                    <button id="rate-refresh-btn" onclick="window.fetchExchangeRate(true)" class="w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-full shadow-sm text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors" title="환율 최신화 (새로고침)">
+                        <i class="fas fa-sync-alt text-xs"></i>
+                    </button>
+                `;
+
+                const calcRateDisplay = document.getElementById('calc-rate-display');
+                if (calcRateDisplay) {
+                    const newRateStr = sendRate.toLocaleString('ko-KR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                    
+                    calcRateDisplay.innerText = newRateStr;
+                    calcRateDisplay.classList.add('transition-all', 'duration-300');
+                    
+                    if (isManual) {
+                        calcRateDisplay.classList.remove('bg-green-50', 'text-green-700');
+                        calcRateDisplay.classList.add('bg-yellow-100', 'text-yellow-700', 'scale-105');
+                        setTimeout(() => {
+                            calcRateDisplay.classList.remove('bg-yellow-100', 'text-yellow-700', 'scale-105');
+                            calcRateDisplay.classList.add('bg-green-50', 'text-green-700');
+                        }, 600);
+                    }
+                    
+                    window.calculateTotal(); 
+                }
+
+                if (isManual) {
+                    showToast('실시간 환율 정보가 갱신되었습니다.');
+                }
+            } else {
                 displayElement.innerHTML = `
                     <span class="text-[11px] text-red-400">환율 정보 연동 실패</span>
                     <button id="rate-refresh-btn" onclick="window.fetchExchangeRate(true)" class="ml-2 w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-full shadow-sm text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors">
@@ -873,8 +911,8 @@
         // 페이지 로드 시 환율 정보 즉시 호출
         window.fetchExchangeRate();
 
-        // 창을 켜두었을 때 10분(600,000ms) 단위로 알아서 최신 환율 자동 갱신
-        setInterval(() => window.fetchExchangeRate(false), 600000);
+        // 1분 주기로 자동 업데이트
+        setInterval(() => window.fetchExchangeRate(false), 60000);
 
     </script>
 </body>
