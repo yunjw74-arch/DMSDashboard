@@ -28,11 +28,11 @@
         <header class="mb-5 flex flex-col xl:flex-row items-center justify-between border-b border-gray-200 pb-4 mt-2 gap-4">
             <!-- 검색 영역 -->
             <div class="flex flex-wrap justify-start items-center gap-3 w-full flex-1 ml-2">
-                <form action="https://search.naver.com/search.naver" method="get" target="_blank" class="flex items-center relative flex-1 min-w-[160px] max-w-[330px]" onsubmit="const f = this; setTimeout(function(){ f.reset(); }, 1000);">
+                <form action="https://search.naver.com/search.naver" method="get" target="_blank" class="flex items-center relative flex-1 min-w-[160px] max-w-[330px]" onsubmit="setTimeout(() => this.reset(), 100)">
                     <input type="text" name="query" placeholder="네이버 검색" class="pl-8 pr-3 py-1.5 border border-[#03c75a] rounded-full text-[13px] focus:outline-none focus:ring-2 focus:ring-[#03c75a]/30 w-full bg-gray-50 focus:bg-white transition-colors" autocomplete="off">
                     <i class="fas fa-search absolute left-3 text-[#03c75a] text-xs"></i>
                 </form>
-                <form action="https://www.google.com/search" method="get" target="_blank" class="flex items-center relative flex-1 min-w-[160px] max-w-[330px]" onsubmit="const f = this; setTimeout(function(){ f.reset(); }, 1000);">
+                <form action="https://www.google.com/search" method="get" target="_blank" class="flex items-center relative flex-1 min-w-[160px] max-w-[330px]" onsubmit="setTimeout(() => this.reset(), 100)">
                     <input type="text" name="q" placeholder="구글 검색" class="pl-8 pr-3 py-1.5 border border-[#4285f4] rounded-full text-[13px] focus:outline-none focus:ring-2 focus:ring-[#4285f4]/30 w-full bg-gray-50 focus:bg-white transition-colors" autocomplete="off">
                     <i class="fas fa-search absolute left-3 text-[#4285f4] text-xs"></i>
                 </form>
@@ -40,13 +40,14 @@
 
             <!-- 우측 아이콘 및 프로필 영역 -->
             <div class="flex flex-wrap justify-start xl:justify-end items-center gap-2 w-full xl:w-auto shrink-0 mr-2 ml-2 xl:ml-0">
-                <form action="https://search.shopping.naver.com/search/all" method="get" target="_blank" class="flex items-center relative w-[130px] md:w-[165px]" onsubmit="const f = this; setTimeout(function(){ f.reset(); }, 1000);">
+                <form action="https://search.shopping.naver.com/search/all" method="get" target="_blank" class="flex items-center relative w-[130px] md:w-[165px]" onsubmit="setTimeout(() => this.reset(), 100)">
                     <input type="text" name="query" placeholder="네이버 최저가 검색" class="pl-8 pr-3 py-1.5 border border-[#03c75a] rounded-full text-[13px] text-[#03c75a] placeholder-[#03c75a]/70 focus:outline-none focus:ring-2 focus:ring-[#03c75a]/30 w-full bg-gray-50 transition-colors" autocomplete="off">
                     <i class="fas fa-shopping-cart absolute left-3 text-[#03c75a] text-xs"></i>
                 </form>
 
-                <form action="https://www.compuzone.co.kr/search/search.htm" method="get" target="_blank" accept-charset="euc-kr" class="flex items-center relative w-[130px] md:w-[165px]" onsubmit="const f = this; setTimeout(function(){ f.reset(); }, 1000);">
-                    <input type="text" name="SearWord" placeholder="컴퓨존 검색" class="pl-8 pr-3 py-1.5 border border-[#0a53a8] rounded-full text-[13px] text-[#0a53a8] placeholder-[#0a53a8]/70 focus:outline-none focus:ring-2 focus:ring-[#0a53a8]/30 w-full bg-gray-50 transition-colors" autocomplete="off">
+                <form action="https://www.compuzone.co.kr/search/search.htm" method="get" target="_blank" class="flex items-center relative w-[130px] md:w-[165px]" onsubmit="setTimeout(() => this.reset(), 100)">
+                    <!-- name 속성을 SearchProductKey 로 복구하여 검색 기능 정상화 -->
+                    <input type="text" name="SearchProductKey" placeholder="컴퓨존 검색" class="pl-8 pr-3 py-1.5 border border-[#0a53a8] rounded-full text-[13px] text-[#0a53a8] placeholder-[#0a53a8]/70 focus:outline-none focus:ring-2 focus:ring-[#0a53a8]/30 w-full bg-gray-50 transition-colors" autocomplete="off">
                     <i class="fas fa-desktop absolute left-3 text-[#0a53a8] text-xs"></i>
                 </form>
 
@@ -57,7 +58,14 @@
                         <svg class="w-4 h-4 text-[#8b5cf6]" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C12 6.627 17.373 12 24 12C17.373 12 12 17.373 12 24C12 17.373 6.627 12 0 12C6.627 12 12 6.627 12 0Z" /></svg>
                     </a>
                     <a href="https://notebooklm.google.com/" target="_blank" title="노트북LM" class="bg-white hover:bg-gray-50 transition w-8 h-8 rounded-full border border-gray-200 shadow-sm flex items-center justify-center group overflow-hidden">
-                        <img src="https://notebooklm.google.com/favicon.ico" class="w-4 h-4 object-contain" onerror="this.src='https://www.google.com/s2/favicons?sz=64&domain=notebooklm.google.com'">
+                        <!-- 직접 그린 노트북LM SVG 로고 적용 -->
+                        <div class="w-5 h-5 bg-[#1e293b] rounded-full flex items-center justify-center group-hover:scale-105 transition-transform">
+                            <svg class="w-3.5 h-3.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 22v-6a8 8 0 0 1 16 0v6" />
+                                <path d="M8 22v-3a4 4 0 0 1 8 0v3" />
+                                <path d="M12 22v-1" />
+                            </svg>
+                        </div>
                     </a>
                     <a href="https://naver.com/" target="_blank" title="네이버" class="bg-white hover:bg-gray-50 transition w-8 h-8 rounded-full border border-gray-200 shadow-sm flex items-center justify-center group">
                         <span class="text-[#03c75a] font-extrabold text-[13px]">N</span>
@@ -94,14 +102,21 @@
 
         <!-- 하단 섹션 -->
         <div class="mt-5 border-t border-gray-200 pt-8 pb-20">
-            <div class="w-full flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-                <div class="flex items-center gap-3">
+            <div class="w-full flex flex-col md:flex-row items-center mb-6 gap-4">
+                <div class="flex items-center gap-3 shrink-0">
                     <div onclick="openCalendarSettings()" class="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm border border-gray-100 hover:bg-gray-50 cursor-pointer">
                         <i class="fas fa-calendar-alt text-blue-500"></i>
                     </div>
                     <button type="button" onclick="openCalendarSettings()" class="text-lg font-bold text-gray-800 hover:text-blue-600 transition-colors">업무 일정</button>
                 </div>
                 
+                <!-- 환율 정보 영역 -->
+                <div id="exchange-rate-display" class="flex-1 flex justify-end items-center px-2">
+                    <span class="text-[11px] text-gray-400 flex items-center gap-2">
+                        <i class="fas fa-circle-notch fa-spin"></i> 환율 정보 로딩중...
+                    </span>
+                </div>
+
                 <!-- 카카오 캘린더 일정 등록 버튼 -->
                 <a href="https://calendar.kakao.com/schedule" target="_blank" class="flex items-center gap-2 bg-[#FEE500] hover:bg-[#FDD800] text-[#000000] px-4 py-2.5 rounded-lg font-bold text-[13px] shadow-sm transition-colors shrink-0">
                     <i class="fas fa-calendar-plus"></i> 카카오 캘린더 일정 등록
@@ -740,6 +755,37 @@
                 </li>
             `).join('');
         }
+
+        // --- 환율 정보 연동 로직 ---
+        async function fetchExchangeRate() {
+            const displayElement = document.getElementById('exchange-rate-display');
+            try {
+                // 오픈 환율 API 호출
+                const res = await fetch('https://open.er-api.com/v6/latest/USD');
+                const data = await res.json();
+                
+                if (data && data.rates && data.rates.KRW) {
+                    const baseRate = data.rates.KRW;
+                    // 송금 보낼 때 환율 = 매매기준율 + 약 9.8원 (국내 은행 평균 전신환매도율 스프레드)
+                    const sendRate = baseRate + 9.8; 
+                    
+                    displayElement.innerHTML = `
+                        <div class="flex items-center gap-2 text-[12px] font-bold text-gray-700 bg-green-50 px-3 py-1.5 rounded-lg border border-green-200 shadow-sm cursor-help transition-all hover:bg-green-100" title="매매기준율: ${baseRate.toLocaleString('ko-KR', {maximumFractionDigits: 2})}원 / 스프레드 +9.8원 적용">
+                            <span class="flex items-center justify-center w-5 h-5 bg-white rounded-full text-green-600 shadow-sm"><i class="fas fa-dollar-sign text-[10px]"></i></span>
+                            <span>1 USD = <span class="text-red-500">${sendRate.toLocaleString('ko-KR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span> 원</span>
+                            <span class="text-[10px] text-gray-500 font-normal ml-1 bg-white px-1.5 py-0.5 rounded border border-gray-200">송금 보낼때</span>
+                        </div>
+                    `;
+                }
+            } catch (e) {
+                console.error("환율 정보를 불러오지 못했습니다.", e);
+                displayElement.innerHTML = `<span class="text-[11px] text-gray-400">환율 정보 연동 실패</span>`;
+            }
+        }
+        
+        // 페이지 로드 시 환율 정보 즉시 호출
+        fetchExchangeRate();
+
     </script>
 </body>
 </html>
